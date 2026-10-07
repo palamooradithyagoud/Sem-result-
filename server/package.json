@@ -2,6 +2,7 @@
   "name": "@samas/server",
   "version": "1.0.0",
   "type": "module",
+  "main": "dist/server.js",
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
