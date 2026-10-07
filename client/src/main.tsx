@@ -4,7 +4,6 @@ import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom"
 import { Toaster } from "sonner";
 import "./index.css";
 import { AppLayout } from "./layouts/AppLayout";
-import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { BatchesPage } from "./pages/BatchesPage";
 import { BatchDetailPage } from "./pages/BatchDetailPage";
@@ -16,19 +15,11 @@ import { ResultsPage } from "./pages/ResultsPage";
 import { SectionViewPage } from "./pages/SectionViewPage";
 import { UploadHistoryPage } from "./pages/UploadHistoryPage";
 
-function Protected({ children }: { children: React.ReactNode }) {
-  return localStorage.getItem("authToken") ? children : <Navigate to="/login" replace />;
-}
-
 const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
+  { path: "/login", element: <Navigate to="/" replace /> },
   {
     path: "/",
-    element: (
-      <Protected>
-        <AppLayout />
-      </Protected>
-    ),
+    element: <AppLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "batches", element: <BatchesPage /> },
@@ -41,7 +32,8 @@ const router = createBrowserRouter([
       { path: "results", element: <ResultsPage /> },
       { path: "uploads", element: <UploadHistoryPage /> }
     ]
-  }
+  },
+  { path: "*", element: <Navigate to="/" replace /> }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

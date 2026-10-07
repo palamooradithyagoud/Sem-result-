@@ -5,16 +5,13 @@ import {
   History,
   LayoutDashboard,
   Layers,
-  LogOut,
   Menu,
   Upload,
   Users,
   X
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { api } from "../services/api";
-import { Button } from "../components/ui/button";
+import { NavLink, Outlet } from "react-router-dom";
 import { cn } from "../lib/utils";
 
 const navItems = [
@@ -59,13 +56,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function AppLayout() {
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  async function logout() {
-    await api.logout();
-    navigate("/login");
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -134,12 +125,10 @@ export function AppLayout() {
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="hidden text-sm text-muted-foreground lg:block">HOD / Administrator</div>
-
-          <Button variant="secondary" size="sm" onClick={logout} className="gap-2">
-            <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-xs font-medium text-foreground">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            HOD / Administrator
+          </div>
         </header>
 
         <main className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8">

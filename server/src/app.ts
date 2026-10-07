@@ -15,6 +15,8 @@ import { studentRoutes } from "./routes/studentRoutes.js";
 import { uploadRoutes } from "./routes/uploadRoutes.js";
 import { batchDetailRoutes, sectionRoutes, academicRoutes } from "./routes/academicRoutes.js";
 
+import { bootstrapAdmin } from "./services/bootstrapAdmin.js";
+
 export const app = express();
 
 app.use(helmet());
@@ -23,29 +25,40 @@ app.use(cookieParser());
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan("dev"));
 
-// Ensure DB is connected for serverless invocations
+let bootstrapped = false;
+// Ensure DB is connected and admin initialized for serverless invocations
 app.use(async (_req, _res, next) => {
   try {
     await connectDatabase();
+    if (!bootstrapped) {
+      await bootstrapAdmin();
+      bootstrapped = true;
+    }
     next();
   } catch (err) {
     next(err);
   }
 });
 
-app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
-app.use("/api/auth", authRoutes);
+const api = express.Router();
 
-app.use(requireAuth);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/batches", batchRoutes);
-app.use("/api/batches", batchDetailRoutes);
-app.use("/api/academic", academicRoutes);
-app.use("/api/students", studentRoutes);
-app.use("/api/attendance", attendanceRoutes);
-app.use("/api/results", resultRoutes);
-app.use("/api/uploads", uploadRoutes);
-app.use("/api/sections", sectionRoutes);
+api.get("/health", (_req, res) => res.json({ status: "ok" }));
+api.use("/auth", authRoutes);
+
+api.use(requireAuth);
+api.use("/dashboard", dashboardRoutes);
+api.use("/batches", batchRoutes);
+api.use("/batches", batchDetailRoutes);
+api.use("/academic", academicRoutes);
+api.use("/students", studentRoutes);
+api.use("/attendance", attendanceRoutes);
+api.use("/results", resultRoutes);
+api.use("/uploads", uploadRoutes);
+api.use("/sections", sectionRoutes);
+
+// Support both /api/* and direct path invocation from Vercel rewrites
+app.use("/api", api);
+app.use(api);
 
 app.use(errorHandler);
 
